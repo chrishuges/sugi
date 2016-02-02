@@ -61,6 +61,13 @@ meanSdPlot(eNorm2)
 eNorm3 = justvsn(eset)
 meanSdPlot(eNorm3)
 #the two plots should look identical...only need to use one version of this in the future
+#lets save the data for use later
+#as an RDS
+saveRDS(eNorm3,'ch_Sugi_normalizedPeptides.rds')
+#as a text file you can open in excel
+write.table(eNorm3,'ch_Sugi_normalizedPeptides.txt',quote=FALSE,sep='\t',col.names=TRUE,row.names=FALSE)
+
+
 
 #lets do some stats of the conditions vs. controls using limma
 #first we need to make a design matrix that tells limma what our samples are, 1 means yes, 0 means no based on columns
@@ -100,6 +107,11 @@ pro = merge(pro1,pro2,by=c('Accession','Gene','Descriptions'))
 head(pro)
 
 
+#lets save the data for use later
+#as an RDS
+saveRDS(pro,'ch_Sugi_processedProteins.rds')
+#as a text file you can open in excel
+write.table(pro,'ch_Sugi_processedProteins.txt',quote=FALSE,sep='\t',col.names=TRUE,row.names=FALSE)
 
 
 
