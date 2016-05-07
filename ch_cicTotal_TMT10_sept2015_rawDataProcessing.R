@@ -25,7 +25,7 @@ processPSM <- function(psmFile, proteinFile, ... ){
 	print('Raw data frame dimensions')
 	print(dim(pep))
 	#remove non-unique peptides or those without quan values
-	#pep<-subset(pep, Number.of.Proteins==1)
+	pep<-subset(pep, Number.of.Proteins==1)
 	pep<-subset(pep, !grepl('NoQuanValues',pep$Quan.Info))
 	print('Unique Peptides Only')
 	print(dim(pep))
