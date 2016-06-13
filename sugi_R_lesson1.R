@@ -115,3 +115,10 @@ write.table(pro,'ch_Sugi_processedProteins.txt',quote=FALSE,sep='\t',col.names=T
 
 
 
+
+
+
+
+
+
+

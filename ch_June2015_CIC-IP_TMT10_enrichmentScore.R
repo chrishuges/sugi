@@ -156,3 +156,45 @@ dev.off()
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#sugi's data is different...I really don't like her knockout control, so lets ignore it altogether
+pepSet$Neg = ifelse(is.na(pepSet$Neg),1,pepSet$Neg)
+pepSet[,c(7:15)] = as.data.frame(normalizeMedianValues(as.matrix(pepSet[,c(7:15)])))
+pepSet$score1 =  (rowMeans(pepSet[,c(7,10,13)],na.rm=TRUE) / sqrt(apply(pepSet[,c(7,10,13)],1,function(x) var(x,na.rm=TRUE)))) ^ rowSums(!is.na(pepSet[,c(7,10,13)]))
+pepSet$score2 = pepSet$score1 * pepSet$psms
+#that score seems a bit poor
+#try another
+pepSet$Neg = pepSet$Neg / 10
+pepSet$Neg = ifelse(is.na(pepSet$Neg),1,pepSet$Neg)
+pepSet$sCore = 1/pepSet$Neg
+pepSet[,c(7:15)] = as.data.frame(normalizeMedianValues(as.matrix(pepSet[,c(7:15)])))
+pepSet$sCore_adj = (pepSet$sCore * rowMeans(pepSet[,c(7,10,13)],na.rm=TRUE))*rowSums(!is.na(pepSet[,c(7,10,13)]))
+pepSet$sCore_int = pepSet$sCore_adj * pepSet$psms
+pepSet$sCore_var = pepSet$sCore_int / sqrt(apply(pepSet[,c(7,10,13)],1,function(x) var(x,na.rm=TRUE)))
+###protein calculation
+pepSet$pepNum = 1
+pro1 = aggregate(pepNum~Accession+Gene+Descriptions, data=pepSet, sum, na.rm=TRUE, na.action=na.pass)
+pro2 = aggregate(cbind(MW.in.kDa,sCore_var)~Accession+Gene+Descriptions, data=pepSet, median, na.rm=TRUE, na.action=na.pass)
+proSet = merge(pro1,pro2,by=c('Accession','Gene','Descriptions'))
+proSet = proSet[order(-proSet$sCore_var),]
+
+
