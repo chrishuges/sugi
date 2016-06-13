@@ -96,23 +96,23 @@ pepSet<-processPSM(psm,pro,plex)
 #what column are your IP samples in?
 ipCols = 7:9
 #what column are your negative samples in?
-#negCols = 16 - should ignore the negative here...it is not good.
+negCols = 16
 #prefilter the data
 pepSet = subset(pepSet, rowSums(is.na(pepSet[,ipCols]))<2)
 #need to change the column numbers to the numbers for your negative
-#pepSet$Neg = pepSet[,negCols]
+pepSet$Neg = pepSet[,negCols]
 #set NA values in your negative to a base value of 1 for calculations
-#pepSet$Neg = ifelse(is.na(pepSet$Neg),1,pepSet$Neg)
+pepSet$Neg = ifelse(is.na(pepSet$Neg),1,pepSet$Neg)
 #calculate the signal in the IgG relative to the target protein signals
-#pepSet$Neg = pepSet$Neg / rowMeans(pepSet[,ipCols],na.rm=TRUE)
+pepSet$Neg = pepSet$Neg / rowMeans(pepSet[,ipCols],na.rm=TRUE)
 #normalize the IP samples only (not the negative) using a median shift (limma package)
 pepSet[,ipCols] = as.data.frame(normalizeMedianValues(as.matrix(pepSet[,ipCols])))
 #calculate the signal score
 eSignal = apply(pepSet[,ipCols],2,function(x) x * pepSet$psms)
 #calculate the penalty score
-pepSet$penalty = rowSums(!is.na(pepSet[,ipCols])) * sqrt(apply(pepSet[,ipCols],1,function(x) var(x,na.rm=TRUE))) #* pepSet$Neg
+pepSet$penalty = rowSums(!is.na(pepSet[,ipCols])) * sqrt(apply(pepSet[,ipCols],1,function(x) var(x,na.rm=TRUE))) * pepSet$Neg
 #calculate the score relative to the negative
-eScore = apply(eSignal,2,function(x) x / pepSet$penalty)
+eScore = apply(eSignal,2,function(x) x / pepSet$penalty) 
 #rebind the data
 eSet = cbind(pepSet[,c(1:5,6)],eScore)
 
